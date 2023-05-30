@@ -1,0 +1,67 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+
+#define vertex 6
+
+using namespace std;
+
+void dijkstra(int G[vertex][vertex], int source, vector<int>& time) {
+    int numNodes = vertex;
+    vector<bool> visited(numNodes, false);
+    time[source] = 0;
+
+    for (int i = 0; i < numNodes - 1; ++i) {
+        int minTime = numeric_limits<int>::max();
+        int minIndex = -1;
+
+        // Find the node with the minimum time
+        for (int j = 0; j < numNodes; ++j) {
+            if (!visited[j] && time[j] < minTime) {
+                minTime = time[j];
+                minIndex = j;
+            }
+        }
+
+        // Mark the selected node as visited
+        visited[minIndex] = true;
+
+        // Update time to neighboring nodes
+        for (int j = 0; j < numNodes; ++j) {
+            if (!visited[j] && G[minIndex][j] != 0 && time[minIndex] != numeric_limits<int>::max()) {
+                int newTime = time[minIndex] + G[minIndex][j];
+                if (newTime < time[j]) {
+                    time[j] = newTime;
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    int numNodes = vertex;
+    int G[vertex][vertex] = {
+        {0, 10, 0, 0, 15, 5},
+        {10, 0, 10, 30, 0, 0},
+        {0, 10, 0, 12, 5, 0},
+        {0, 30, 12, 0, 0, 20},
+        {15, 0, 5, 0, 0, 0},
+        {5, 0, 0, 20, 0, 0}
+    };
+
+    int sourceNode = 6;
+    vector<int> time(numNodes, numeric_limits<int>::max());
+    dijkstra(G, sourceNode, time);
+
+    // Print the minimum time from the start node to all other nodes
+    for (int i = 0; i < numNodes; ++i) {
+        cout << "Minimum time   " << sourceNode << " ---> " << i << ": ";
+        if (time[i] == numeric_limits<int>::max()) {
+            cout << "Not reachable" << endl;
+        } else {
+            cout << time[i] << endl;
+        }
+    }
+
+    return 0;
+}
